@@ -24,8 +24,8 @@
     "jsx-a11y"
   ],
   "rules": {
-    "no-underscore-dangle": 1,
-    "react/prop-types": 1,
+    "no-underscore-dangle": 0,
+    "react/prop-types": 0,
     "react/jsx-filename-extension": 0,
     "react/destructuring-assignment": 1
   }

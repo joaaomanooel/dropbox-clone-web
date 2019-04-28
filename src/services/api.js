@@ -1,3 +1,4 @@
 import axios from 'axios';
 
-export default axios.create({ baseURL: 'https://dropbox-clone-api.herokuapp.com/api/v1' });
+export const API_URL = 'https://dropbox-clone-api.herokuapp.com';
+export default axios.create({ baseURL: `${API_URL}/api/v1` });

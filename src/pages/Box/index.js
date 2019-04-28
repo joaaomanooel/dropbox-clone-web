@@ -3,19 +3,28 @@ import pt from 'date-fns/locale/pt';
 import React, { Component } from 'react';
 import Dropzone from 'react-dropzone';
 import { MdInsertDriveFile } from 'react-icons/md';
-
+import socket from 'socket.io-client';
 import logo from '../../assets/logo.svg';
-import API from '../../services/api';
+import API, { API_URL } from '../../services/api';
 import './styles.css';
+
 
 export default class Box extends Component {
   state = { box: {} };
 
   async componentDidMount() {
-    const { id } = this.props.match.params;
+    const { match: { params: { id } } } = this.props;
     const response = await API.get(`/boxes/${id}`);
     if (response.status !== 200) return null;
-    return this.setState({ box: response.data });
+    this.setState({ box: response.data });
+    return this.subscribeToNewFiles();
+  }
+
+  subscribeToNewFiles = () => {
+    const io = socket(API_URL);
+    const { box } = this.state;
+    io.emit('connectRoom', box._id);
+    io.on('file', file => this.setState({ box: { ...box, files: [file, ...box.files] } }));
   }
 
   renderDistanceTime = date => (
@@ -34,6 +43,9 @@ export default class Box extends Component {
 
   handleUpload = files => files.forEach((file) => {
     const data = new FormData();
+
+    data.append('file', file);
+    API.post(`boxes/${this.state.box._id}/files`, data);
   });
 
   renderDropzone = ({ getRootProps, getInputProps }) => (
